@@ -29,18 +29,19 @@ def cumulative_gain_curve(y_true, y_score, pos_label=None):
 
     # ensure binary classification if pos_label is not specified
     classes = np.unique(y_true)
-    if (pos_label is None and
-        not (np.array_equal(classes, [0, 1]) or
-             np.array_equal(classes, [-1, 1]) or
-             np.array_equal(classes, [0]) or
-             np.array_equal(classes, [-1]) or
-             np.array_equal(classes, [1]))):
+    if pos_label is None and not (
+        np.array_equal(classes, [0, 1])
+        or np.array_equal(classes, [-1, 1])
+        or np.array_equal(classes, [0])
+        or np.array_equal(classes, [-1])
+        or np.array_equal(classes, [1])
+    ):
         raise ValueError("Data is not binary and pos_label is not specified")
     elif pos_label is None:
-        pos_label = 1.
+        pos_label = 1.0
 
     # make y_true a boolean vector
-    y_true = (y_true == pos_label)
+    y_true = y_true == pos_label
 
     sorted_indices = np.argsort(y_score)[::-1]
     y_true = y_true[sorted_indices]
@@ -77,8 +78,7 @@ def cumulative_lift_curve(y_true, y_score, pos_label=None):
         ValueError: If `y_true` is not composed of 2 classes. The Cumulative
             Gain Chart is only relevant in binary classification.
     """
-    percentages, gains = cumulative_gain_curve(
-        y_true, y_score, pos_label=pos_label)
+    percentages, gains = cumulative_gain_curve(y_true, y_score, pos_label=pos_label)
     percentages = percentages[1:]
     gains = gains[1:] / percentages
     return percentages, gains
@@ -112,8 +112,10 @@ def binary_ks_curve(y_true, y_probas):
     lb = LabelEncoder()
     encoded_labels = lb.fit_transform(y_true)
     if len(lb.classes_) != 2:
-        raise ValueError('Cannot calculate KS statistic for data with '
-                         '{} category/ies'.format(len(lb.classes_)))
+        raise ValueError(
+            "Cannot calculate KS statistic for data with "
+            "{} category/ies".format(len(lb.classes_))
+        )
     idx = encoded_labels == 0
     data1 = np.sort(y_probas[idx])
     data2 = np.sort(y_probas[np.logical_not(idx)])
@@ -121,7 +123,6 @@ def binary_ks_curve(y_true, y_probas):
     ctr1, ctr2 = 0, 0
     thresholds, pct1, pct2 = [], [], []
     while ctr1 < len(data1) or ctr2 < len(data2):
-
         # Check if data1 has no more elements
         if ctr1 >= len(data1):
             current = data2[ctr2]

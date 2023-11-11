@@ -7,7 +7,9 @@ import streamlit as st
 from sklearn import metrics
 
 from .toolkit_perf import (
-    cumulative_gain_curve, cumulative_lift_curve, binary_ks_curve,
+    cumulative_gain_curve,
+    cumulative_lift_curve,
+    binary_ks_curve,
 )
 
 
@@ -19,12 +21,14 @@ def confusion_matrix_chart(cm, labels=None, title="Confusion matrix"):
     source["Actual"] = labels
     source = source.melt(id_vars=["Actual"], var_name="Predicted")
 
-    base = alt.Chart(source).encode(
-        x="Predicted:O",
-        y="Actual:O",
-        tooltip=["value"]
-    ).properties(
-        title=title, width=300, height=270,
+    base = (
+        alt.Chart(source)
+        .encode(x="Predicted:O", y="Actual:O", tooltip=["value"])
+        .properties(
+            title=title,
+            width=300,
+            height=270,
+        )
     )
     rects = base.mark_rect().encode(
         color=alt.Color("value:Q", scale=alt.Scale(scheme="blues"))
@@ -56,12 +60,16 @@ def roc_chart(fpr, tpr, title="ROC curve"):
     )
 
     _df = pd.DataFrame({"x": [0, 1], "y": [0, 1]})
-    baseline = alt.Chart(_df).mark_line(
-        strokeDash=[20, 5],
-        color="black",
-    ).encode(
-        alt.X("x"),
-        alt.Y("y"),
+    baseline = (
+        alt.Chart(_df)
+        .mark_line(
+            strokeDash=[20, 5],
+            color="black",
+        )
+        .encode(
+            alt.X("x"),
+            alt.Y("y"),
+        )
     )
     return line + area + baseline
 
@@ -90,29 +98,31 @@ def cumulative_gain_chart(percentages, gains, title="Cumulative gain curve"):
     """Cumulative gain curve."""
     source = pd.DataFrame({"x": percentages, "y": gains})
     return line_chart(
-        source, "Percentage of samples selected",
-        "Percentage of positive labels", title=title)
+        source,
+        "Percentage of samples selected",
+        "Percentage of positive labels",
+        title=title,
+    )
 
 
 def cumulative_lift_chart(percentages, gains, title="Cumulative lift curve"):
     """Cumulative lift curve."""
     source = pd.DataFrame({"x": percentages, "y": gains})
-    return line_chart(
-        source, "Percentage of samples selected", "Lift", title=title)
+    return line_chart(source, "Percentage of samples selected", "Lift", title=title)
 
 
 def recall_k_chart(percentages, recall, title="Recall@K"):
     """Recall@k curve."""
     source = pd.DataFrame({"x": percentages, "y": recall})
-    return line_chart(
-        source, "Percentage of samples selected", "Recall", title=title)
+    return line_chart(source, "Percentage of samples selected", "Recall", title=title)
 
 
 def precision_k_chart(percentages, precision, title="Precision@K"):
     """Precision@k curve."""
     source = pd.DataFrame({"x": percentages, "y": precision})
     return line_chart(
-        source, "Percentage of samples selected", "Precision", title=title)
+        source, "Percentage of samples selected", "Precision", title=title
+    )
 
 
 def ks_statistic_chart(
@@ -123,12 +133,9 @@ def ks_statistic_chart(
     title="KS statistic curve",
 ):
     """KS statistic curve."""
-    source = (
-        pd.DataFrame({
-            "Threshold": thresholds, "Class_0": pct0, "Class_1": pct1
-        })
-        .melt(id_vars=["Threshold"], var_name="Class", value_name="Value")
-    )
+    source = pd.DataFrame(
+        {"Threshold": thresholds, "Class_0": pct0, "Class_1": pct1}
+    ).melt(id_vars=["Threshold"], var_name="Class", value_name="Value")
     base = alt.Chart(source).properties(title=title)
     line = base.mark_line(color="red").encode(
         alt.X("Threshold:Q", title="Threshold"),
@@ -138,13 +145,17 @@ def ks_statistic_chart(
     )
 
     _df = pd.DataFrame({"x": [max_dist_at, max_dist_at], "y": [0, 1]})
-    baseline = alt.Chart(_df).mark_line(
-        strokeDash=[20, 5],
-        color="black",
-    ).encode(
-        alt.X("x"),
-        alt.Y("y"),
-        alt.Tooltip("x"),
+    baseline = (
+        alt.Chart(_df)
+        .mark_line(
+            strokeDash=[20, 5],
+            color="black",
+        )
+        .encode(
+            alt.X("x"),
+            alt.Y("y"),
+            alt.Tooltip("x"),
+        )
     )
     return line + baseline
 
@@ -192,12 +203,11 @@ def classification_summary(actual, proba, predicted):
     #     use_container_width=False,
     # )
 
-    thresholds, pct0, pct1, ks_stat, max_dist_at, _ = binary_ks_curve(
-        actual, proba)
+    thresholds, pct0, pct1, ks_stat, max_dist_at, _ = binary_ks_curve(actual, proba)
     st.altair_chart(
         ks_statistic_chart(
-            thresholds, pct0, pct1, max_dist_at,
-            title=f"KS statistic = {ks_stat:.4f}"),
+            thresholds, pct0, pct1, max_dist_at, title=f"KS statistic = {ks_stat:.4f}"
+        ),
         use_container_width=False,
     )
 
@@ -238,12 +248,13 @@ def predicted_actual_chart(
     vmin = source.min().min()
     vmax = source.max().max()
     _df = pd.DataFrame({"x": [vmin, vmax], "y": [vmin, vmax]})
-    baseline = alt.Chart(_df).mark_line(
-        strokeDash=[20, 5],
-        color="black"
-    ).encode(
-        alt.X("x"),
-        alt.Y("y"),
+    baseline = (
+        alt.Chart(_df)
+        .mark_line(strokeDash=[20, 5], color="black")
+        .encode(
+            alt.X("x"),
+            alt.Y("y"),
+        )
     )
     return scatter + baseline
 

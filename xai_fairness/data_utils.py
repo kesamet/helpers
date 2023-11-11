@@ -41,9 +41,7 @@ class DataInputs:
         self.pred_class = None
         self.max_rows = 3000
         self.has_fai = (
-            bool(protected_features.keys())
-            if protected_features is not None
-            else False
+            bool(protected_features.keys()) if protected_features is not None else False
         )
 
     def model(self, model):
@@ -100,12 +98,12 @@ class DataInputs:
 
         if self.ml_type not in ["regression", "classification"]:
             raise ValueError(
-                "ml_type has to be either 'regression' or 'classification'")
+                "ml_type has to be either 'regression' or 'classification'"
+            )
 
         if self.ml_type == "regression" and self.is_multiclass:
             raise ValueError(
-                "ml_type is set as 'regression' and "
-                "is_multiclass is set as True"
+                "ml_type is set as 'regression' and " "is_multiclass is set as True"
             )
 
         if self.is_multiclass and len(self.target_classes) < 3:

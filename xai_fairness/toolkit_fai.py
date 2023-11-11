@@ -13,8 +13,8 @@ def prepare_dataset(
     protected_attribute,
     privileged_attribute_values,
     unprivileged_attribute_values,
-    favorable_label=1.,
-    unfavorable_label=0.,
+    favorable_label=1.0,
+    unfavorable_label=0.0,
 ):
     """Prepare dataset for computing fairness metrics."""
     df = features.copy()
@@ -25,10 +25,8 @@ def prepare_dataset(
         label_names=["outcome"],
         scores_names=list(),
         protected_attribute_names=[protected_attribute],
-        privileged_protected_attributes=[
-            np.array(privileged_attribute_values)],
-        unprivileged_protected_attributes=[
-            np.array(unprivileged_attribute_values)],
+        privileged_protected_attributes=[np.array(privileged_attribute_values)],
+        unprivileged_protected_attributes=[np.array(unprivileged_attribute_values)],
         favorable_label=favorable_label,
         unfavorable_label=unfavorable_label,
     )
@@ -41,8 +39,8 @@ def get_aif_metric(
     protected_attribute,
     privileged_attribute_values,
     unprivileged_attribute_values,
-    favorable_label=1.,
-    unfavorable_label=0.,
+    favorable_label=1.0,
+    unfavorable_label=0.0,
 ):
     """Get aif metric wrapper."""
     grdtruth = prepare_dataset(
@@ -69,12 +67,10 @@ def get_aif_metric(
         grdtruth,
         predicted,
         unprivileged_groups=[
-            {protected_attribute: v}
-            for v in unprivileged_attribute_values
+            {protected_attribute: v} for v in unprivileged_attribute_values
         ],
         privileged_groups=[
-            {protected_attribute: v}
-            for v in privileged_attribute_values
+            {protected_attribute: v} for v in privileged_attribute_values
         ],
     )
     return aif_metric
@@ -85,70 +81,83 @@ def compute_fairness_measures(aif_metric):
     fmeasures = list()
 
     # Statistical parity
-    fmeasures.append([
-        "Statistical parity",
-        "Independence",
-        aif_metric.selection_rate(),
-        aif_metric.selection_rate(False),
-        aif_metric.selection_rate(True),
-        aif_metric.disparate_impact(),
-    ])
+    fmeasures.append(
+        [
+            "Statistical parity",
+            "Independence",
+            aif_metric.selection_rate(),
+            aif_metric.selection_rate(False),
+            aif_metric.selection_rate(True),
+            aif_metric.disparate_impact(),
+        ]
+    )
 
     # Equal opportunity: equal FNR
-    fmeasures.append([
-        "Equal opportunity (equal FNR)",
-        "Separation",
-        aif_metric.false_negative_rate(),
-        aif_metric.false_negative_rate(False),
-        aif_metric.false_negative_rate(True),
-        aif_metric.false_negative_rate_ratio(),
-    ])
+    fmeasures.append(
+        [
+            "Equal opportunity (equal FNR)",
+            "Separation",
+            aif_metric.false_negative_rate(),
+            aif_metric.false_negative_rate(False),
+            aif_metric.false_negative_rate(True),
+            aif_metric.false_negative_rate_ratio(),
+        ]
+    )
 
     # Predictive equality: equal FPR
-    fmeasures.append([
-        "Predictive equality (equal FPR)",
-        "Separation",
-        aif_metric.false_positive_rate(),
-        aif_metric.false_positive_rate(False),
-        aif_metric.false_positive_rate(True),
-        aif_metric.false_positive_rate_ratio(),
-    ])
+    fmeasures.append(
+        [
+            "Predictive equality (equal FPR)",
+            "Separation",
+            aif_metric.false_positive_rate(),
+            aif_metric.false_positive_rate(False),
+            aif_metric.false_positive_rate(True),
+            aif_metric.false_positive_rate_ratio(),
+        ]
+    )
 
     # Equal TPR
-    fmeasures.append([
-        "Equal TPR",
-        "Separation",
-        aif_metric.true_positive_rate(),
-        aif_metric.true_positive_rate(False),
-        aif_metric.true_positive_rate(True),
-        aif_metric.true_positive_rate(False) /
-        aif_metric.true_positive_rate(True),
-    ])
+    fmeasures.append(
+        [
+            "Equal TPR",
+            "Separation",
+            aif_metric.true_positive_rate(),
+            aif_metric.true_positive_rate(False),
+            aif_metric.true_positive_rate(True),
+            aif_metric.true_positive_rate(False) / aif_metric.true_positive_rate(True),
+        ]
+    )
 
     # Predictive parity: equal PPV
-    fmeasures.append([
-        "Predictive parity (equal PPV)",
-        "Sufficiency",
-        aif_metric.positive_predictive_value(),
-        aif_metric.positive_predictive_value(False),
-        aif_metric.positive_predictive_value(True),
-        aif_metric.positive_predictive_value(False) /
-        aif_metric.positive_predictive_value(True),
-    ])
+    fmeasures.append(
+        [
+            "Predictive parity (equal PPV)",
+            "Sufficiency",
+            aif_metric.positive_predictive_value(),
+            aif_metric.positive_predictive_value(False),
+            aif_metric.positive_predictive_value(True),
+            aif_metric.positive_predictive_value(False)
+            / aif_metric.positive_predictive_value(True),
+        ]
+    )
 
     # Equal NPV
-    fmeasures.append([
-        "Equal NPV",
-        "Sufficiency",
-        aif_metric.negative_predictive_value(),
-        aif_metric.negative_predictive_value(False),
-        aif_metric.negative_predictive_value(True),
-        aif_metric.negative_predictive_value(False) /
-        aif_metric.negative_predictive_value(True),
-    ])
+    fmeasures.append(
+        [
+            "Equal NPV",
+            "Sufficiency",
+            aif_metric.negative_predictive_value(),
+            aif_metric.negative_predictive_value(False),
+            aif_metric.negative_predictive_value(True),
+            aif_metric.negative_predictive_value(False)
+            / aif_metric.negative_predictive_value(True),
+        ]
+    )
 
-    df = pd.DataFrame(fmeasures, columns=[
-        "Metric", "Criterion", "All", "Unprivileged", "Privileged", "Ratio"])
+    df = pd.DataFrame(
+        fmeasures,
+        columns=["Metric", "Criterion", "All", "Unprivileged", "Privileged", "Ratio"],
+    )
     df.index.name = "order"
     df.reset_index(inplace=True)
     return df
@@ -156,9 +165,7 @@ def compute_fairness_measures(aif_metric):
 
 def get_perf_measure_by_group(aif_metric, metric_name):
     """Get performance measures by group."""
-    perf_measures = [
-        "TPR", "TNR", "FPR", "FNR", "PPV", "NPV", "FDR", "FOR", "ACC"
-    ]
+    perf_measures = ["TPR", "TNR", "FPR", "FNR", "PPV", "NPV", "FDR", "FOR", "ACC"]
 
     func_dict = {
         "selection_rate": lambda x: aif_metric.selection_rate(privileged=x),
@@ -180,10 +187,12 @@ def get_perf_measure_by_group(aif_metric, metric_name):
     else:
         raise NotImplementedError
 
-    df = pd.DataFrame({
-        "Group": ["all", "privileged", "unprivileged"],
-        metric_name: [metric_func(group) for group in [None, True, False]],
-    })
+    df = pd.DataFrame(
+        {
+            "Group": ["all", "privileged", "unprivileged"],
+            metric_name: [metric_func(group) for group in [None, True, False]],
+        }
+    )
     return df
 
 

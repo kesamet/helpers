@@ -42,9 +42,7 @@ def load_json(filepath: Union[Path, str]) -> dict:
 
 def export_pkl(python_object: Any, filepath: Union[Path, str]) -> None:
     if not python_object:
-        raise TypeError(
-            "python_object must be non-zero, non-empty, and not None"
-        )
+        raise TypeError("python_object must be non-zero, non-empty, and not None")
     with open(filepath, "wb") as f:
         pickle.dump(python_object, f)
 
