@@ -22,10 +22,12 @@ def compute_pdp_isolate(model, dataset, model_features, feature):
 
 def pdp_chart(pdp_isolate_out, feature_name):
     """Plot pdp charts."""
-    source = pd.DataFrame({
-        "feature": pdp_isolate_out.feature_grids,
-        "value": pdp_isolate_out.pdp,
-    })
+    source = pd.DataFrame(
+        {
+            "feature": pdp_isolate_out.feature_grids,
+            "value": pdp_isolate_out.pdp,
+        }
+    )
 
     if pdp_isolate_out.feature_type == "numeric":
         base = alt.Chart(source).encode(
@@ -38,10 +40,14 @@ def pdp_chart(pdp_isolate_out, feature_name):
         chart = line + scatter
     else:
         source["feature"] = source["feature"].astype(str)
-        chart = alt.Chart(source).mark_bar().encode(
-            x=alt.X("value", title=""),
-            y=alt.Y("feature", title=feature_name, sort="-x"),
-            tooltip=["feature", "value"],
+        chart = (
+            alt.Chart(source)
+            .mark_bar()
+            .encode(
+                x=alt.X("value", title=""),
+                y=alt.Y("feature", title=feature_name, sort="-x"),
+                tooltip=["feature", "value"],
+            )
         )
     return chart
 
@@ -66,18 +72,25 @@ def pdp_heatmap(pdp_interact_out, feature_names):
             value_vars = pdp_interact_out.feature_grids[i]
             id_vars = list(set(source.columns) - set(value_vars))
             source = pd.melt(
-                source, value_vars=value_vars,
-                id_vars=id_vars, var_name=feature_names[i])
+                source,
+                value_vars=value_vars,
+                id_vars=id_vars,
+                var_name=feature_names[i],
+            )
             source = source[source["value"] == 1].drop(columns=["value"])
 
         elif pdp_interact_out.feature_types[i] == "binary":
             source[feature_names[i]] = source[feature_names[i]].astype(str)
 
-    chart = alt.Chart(source).mark_rect().encode(
-        x=feature_names[0],
-        y=feature_names[1],
-        color="preds",
-        tooltip=feature_names + ["preds"]
+    chart = (
+        alt.Chart(source)
+        .mark_rect()
+        .encode(
+            x=feature_names[0],
+            y=feature_names[1],
+            color="preds",
+            tooltip=feature_names + ["preds"],
+        )
     )
     return chart
 
@@ -97,10 +110,12 @@ def make_source_dp(shap_values, features, feature_names, feature):
     oinds = np.arange(shap_values.shape[0])
     np.random.shuffle(oinds)
 
-    return pd.DataFrame({
-        feature: features[oinds, ind],
-        "value": shap_values[oinds, ind],
-    })
+    return pd.DataFrame(
+        {
+            feature: features[oinds, ind],
+            "value": shap_values[oinds, ind],
+        }
+    )
 
 
 def _is_numeric(series, max_unique=16):
@@ -112,37 +127,44 @@ def _is_numeric(series, max_unique=16):
 
 def dependence_chart(source, feat_col, val_col="value"):
     if _is_numeric(source[feat_col]):
-        scatterplot = alt.Chart(source).mark_circle(size=8).encode(
-            x=alt.X(f"{feat_col}:Q"),
-            y=alt.Y(f"{val_col}:Q", title="SHAP value"),
+        scatterplot = (
+            alt.Chart(source)
+            .mark_circle(size=8)
+            .encode(
+                x=alt.X(f"{feat_col}:Q"),
+                y=alt.Y(f"{val_col}:Q", title="SHAP value"),
+            )
         )
         return scatterplot
 
-    stripplot = alt.Chart(source, width=40).mark_circle(size=8).encode(
-        x=alt.X(
-            "jitter:Q",
-            title=None,
-            axis=alt.Axis(values=[0], ticks=True, grid=False, labels=False),
-            scale=alt.Scale(),
-        ),
-        y=alt.Y(f"{val_col}:Q", title="SHAP value"),
-        color=alt.Color(f"{feat_col}:N", legend=None),
-        column=alt.Column(
-            f"{feat_col}:N",
-            header=alt.Header(
-                labelAngle=-90,
-                titleOrient="top",
-                labelOrient="bottom",
-                labelAlign="right",
-                labelPadding=3,
+    stripplot = (
+        alt.Chart(source, width=40)
+        .mark_circle(size=8)
+        .encode(
+            x=alt.X(
+                "jitter:Q",
+                title=None,
+                axis=alt.Axis(values=[0], ticks=True, grid=False, labels=False),
+                scale=alt.Scale(),
             ),
-        ),
-    ).transform_calculate(
-        # Generate Gaussian jitter with a Box-Muller transform
-        jitter="sqrt(-2*log(random()))*cos(2*PI*random())"
-    ).configure_facet(
-        spacing=0
-    ).configure_view(
-        stroke=None
+            y=alt.Y(f"{val_col}:Q", title="SHAP value"),
+            color=alt.Color(f"{feat_col}:N", legend=None),
+            column=alt.Column(
+                f"{feat_col}:N",
+                header=alt.Header(
+                    labelAngle=-90,
+                    titleOrient="top",
+                    labelOrient="bottom",
+                    labelAlign="right",
+                    labelPadding=3,
+                ),
+            ),
+        )
+        .transform_calculate(
+            # Generate Gaussian jitter with a Box-Muller transform
+            jitter="sqrt(-2*log(random()))*cos(2*PI*random())"
+        )
+        .configure_facet(spacing=0)
+        .configure_view(stroke=None)
     )
     return stripplot

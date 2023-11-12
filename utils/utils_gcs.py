@@ -21,9 +21,7 @@ def gcs_list_blobs(
         the environment.
     """
     client = storage.Client(project_name)
-    return [
-        blob.name for blob in client.list_blobs(bucket_name, prefix=prefix)
-    ]
+    return [blob.name for blob in client.list_blobs(bucket_name, prefix=prefix)]
 
 
 def gcs_get_blob(
@@ -103,7 +101,7 @@ def gcs_write(
     origin_filename: str,
     bucket_name: str,
     dest_blob_path: str,
-    project_name: str = None
+    project_name: str = None,
 ) -> None:
     """Save file to GCS bucket.
 

@@ -20,27 +20,29 @@ def make_source_waterfall(instance, base_value, shap_values, max_display=10):
 
     _df = df.iloc[:max_display]
 
-    df0 = pd.DataFrame({
-        "feature": ["Average Model Output"],
-        "shap_value": [base_value],
-        "val_": [base_value],
-    })
-    df1 = (
-        _df.query("shap_value > 0")
-        .sort_values("shap_value", ascending=False)
-        .copy()
+    df0 = pd.DataFrame(
+        {
+            "feature": ["Average Model Output"],
+            "shap_value": [base_value],
+            "val_": [base_value],
+        }
     )
-    df2 = pd.DataFrame({
-        "feature": ["Others"],
-        "shap_value": [remaining],
-        "val_": [remaining],
-    })
+    df1 = _df.query("shap_value > 0").sort_values("shap_value", ascending=False).copy()
+    df2 = pd.DataFrame(
+        {
+            "feature": ["Others"],
+            "shap_value": [remaining],
+            "val_": [remaining],
+        }
+    )
     df3 = _df.query("shap_value < 0").sort_values("shap_value").copy()
-    df4 = pd.DataFrame({
-        "feature": ["Individual Observation"],
-        "shap_value": [output_value],
-        "val_": [0],
-    })
+    df4 = pd.DataFrame(
+        {
+            "feature": ["Individual Observation"],
+            "shap_value": [output_value],
+            "val_": [0],
+        }
+    )
     source = pd.concat([df0, df1, df2, df3, df4], axis=0, ignore_index=True)
 
     source["close"] = source["val_"].cumsum()
@@ -98,15 +100,19 @@ def waterfall_chart(source, decimal=3):
         source[c] = source[c].round(decimal).astype(str)
     source["feature_value"] = source["feature_value"].replace("nan", "")
 
-    bars = alt.Chart(source).mark_bar().encode(
-        alt.X(
-            "feature:O",
-            sort=source["feature"].tolist(),
-            axis=alt.Axis(labelLimit=120),
-        ),
-        alt.Y("open:Q", scale=alt.Scale(zero=False), title=""),
-        alt.Y2("close:Q"),
-        alt.Tooltip(["feature", "feature_value", "shap_value"]),
+    bars = (
+        alt.Chart(source)
+        .mark_bar()
+        .encode(
+            alt.X(
+                "feature:O",
+                sort=source["feature"].tolist(),
+                axis=alt.Axis(labelLimit=120),
+            ),
+            alt.Y("open:Q", scale=alt.Scale(zero=False), title=""),
+            alt.Y2("close:Q"),
+            alt.Tooltip(["feature", "feature_value", "shap_value"]),
+        )
     )
     color1 = bars.encode(
         color=alt.condition(
@@ -137,13 +143,18 @@ def waterfall_chart(source, decimal=3):
 def histogram_chart(source):
     """Histogram chart."""
     base = alt.Chart(source)
-    chart = base.mark_area(
-        opacity=0.5, interpolate="step",
-    ).encode(
-        alt.X("Prediction:Q", bin=alt.Bin(maxbins=10), title="Prediction"),
-        alt.Y("count()", stack=None),
-    ).properties(
-        width=280,
-        height=200,
+    chart = (
+        base.mark_area(
+            opacity=0.5,
+            interpolate="step",
+        )
+        .encode(
+            alt.X("Prediction:Q", bin=alt.Bin(maxbins=10), title="Prediction"),
+            alt.Y("count()", stack=None),
+        )
+        .properties(
+            width=280,
+            height=200,
+        )
     )
     return chart

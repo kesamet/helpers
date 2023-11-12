@@ -1,0 +1,24 @@
+fastparquet
+fbprophet
+graphviz
+lightgbm
+matplotlib
+numpy
+opencv-python-headless
+pandas
+pycaret
+python-dotenv
+scikit-learn
+scipy
+seaborn
+shap
+statsmodels
+streamlit
+tensorflow
+transformers
+xgboost
+s3fs
+google-cloud-storage
+--find-links https://download.pytorch.org/whl/torch_stable.html
+torch==1.8.1+cpu
+torchvision==0.9.1+cpu
