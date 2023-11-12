@@ -1,10 +1,11 @@
-This repository provides a structure for managing notebooks and analysis using version control. Essentially, notebooks can be:
+# Conversion of Jupyter notebooks to html
+Managing notebooks and analysis using version control
 
+Notebooks can be:
 - stored as `.py` files instead of `.ipynb` automatically using [jupytext](https://jupytext.readthedocs.io/en/latest/paired-notebooks.html)
 - parametrised and executed using [papermill](https://papermill.readthedocs.io/en/latest/)
-- converted to `.html` files and served using [Gitlab pages](https://docs.gitlab.com/ee/user/project/pages/)
+- converted to `.html` files and served using Gitlab pages
 
-The index of past analysis is found: [HERE](https://mpp-data.pages.golabs.io/analysis-store/).
 
 ## Getting started
 
@@ -38,7 +39,9 @@ pyenv local miniconda3-4.3.30
 
 ## Usage
 
-This repository encourages analysts to (1) create notebooks and store them as .py files in templates/, (2) execute them using papermill and store the outputs in generated/, (3) then convert them to .html and store them in public/ where they can be viewed on Gitlab pages.
+- create notebooks and store them as .py files in `templates/`
+- execute them using papermill and store the outputs in `generated/`
+- convert them to `.html` and store them in `public/` where they can be viewed on Gitlab pages.
 
 ### Notebook development
 
@@ -71,24 +74,3 @@ This repository encourages analysts to (1) create notebooks and store them as .p
   ```
 4. Stage and commit the changes in `public/`
 5. Verify that the `pages` CI/CD stage runs successfully
-
-
-dependencies:
-- python=3.8.15
-- pip=22.3.1
-- pip:
-   - black==22.10.0
-   - google-cloud-bigquery==3.4.0
-   - google-cloud-storage==2.6.0
-   - jupyter==1.0.0
-   - jupyter_contrib_nbextensions==0.7.0
-   - jupytext==1.14.1
-   - matplotlib==3.6.2
-   - nb_black==1.0.7
-   - numpy==1.23.5
-   - pandas==1.5.2
-   - pandas-gbq==0.18.1
-   - papermill==2.4.0
-   - scikit-learn==1.1.3
-   - seaborn==0.12.1
-
