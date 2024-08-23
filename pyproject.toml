@@ -2,7 +2,7 @@
 requires-python = ">=3.11"
 
 [tool.ruff]
-line-length = 99
+line-length = 79
 
 [tool.ruff.lint]
 # Add the `line-too-long` rule to the enforced rule set.

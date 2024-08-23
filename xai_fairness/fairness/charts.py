@@ -1,13 +1,10 @@
 # flake8: noqa
-"""
-Helpers for fairness
-"""
 import numpy as np
 import pandas as pd
 import altair as alt
 import streamlit as st
 
-from .toolkit_fai import (
+from .metrics import (
     compute_fairness_measures,
     get_perf_measure_by_group,
 )
@@ -60,7 +57,9 @@ def fmeasures_chart(df, lower, upper):
         alt.Y("Metric:O", sort=alt.SortField("order")),
         alt.Color(
             "Fair?:N",
-            scale=alt.Scale(domain=["Yes", "No"], range=["#1E88E5", "#FF0D57"]),
+            scale=alt.Scale(
+                domain=["Yes", "No"], range=["#1E88E5", "#FF0D57"]
+            ),
         ),
         alt.Tooltip(["Metric", "Ratio"]),
     )
@@ -128,14 +127,22 @@ def alg_fai(aif_metric, threshold, fairness_metrics=None, additional=0):
         lambda x: "Yes" if lower < x < upper else "No"
     )
 
-    st.altair_chart(fmeasures_chart(fmeasures, lower, upper), use_container_width=True)
+    st.altair_chart(
+        fmeasures_chart(fmeasures, lower, upper), use_container_width=True
+    )
     if additional == 1:
         st.table(
-            fmeasures[["Metric", "Unprivileged", "Privileged", "Ratio", "Fair?"]]
+            fmeasures[
+                ["Metric", "Unprivileged", "Privileged", "Ratio", "Fair?"]
+            ]
             .set_index("Metric")
             .style.applymap(color_red, subset=["Fair?"])
             .format(
-                {"Unprivileged": "{:.3f}", "Privileged": "{:.3f}", "Ratio": "{:.3f}"}
+                {
+                    "Unprivileged": "{:.3f}",
+                    "Privileged": "{:.3f}",
+                    "Ratio": "{:.3f}",
+                }
             )
         )
 
@@ -180,7 +187,9 @@ def alg_fai(aif_metric, threshold, fairness_metrics=None, additional=0):
                 )
             )
             all_perfs.append(c)
-        st.altair_chart(alt.concat(*all_perfs, columns=1), use_container_width=False)
+        st.altair_chart(
+            alt.concat(*all_perfs, columns=1), use_container_width=False
+        )
 
 
 def fairness_notes():

@@ -1,6 +1,3 @@
-"""
-Toolkit for fairness.
-"""
 import numpy as np
 import pandas as pd
 from aif360.datasets import BinaryLabelDataset
@@ -25,8 +22,12 @@ def prepare_dataset(
         label_names=["outcome"],
         scores_names=list(),
         protected_attribute_names=[protected_attribute],
-        privileged_protected_attributes=[np.array(privileged_attribute_values)],
-        unprivileged_protected_attributes=[np.array(unprivileged_attribute_values)],
+        privileged_protected_attributes=[
+            np.array(privileged_attribute_values)
+        ],
+        unprivileged_protected_attributes=[
+            np.array(unprivileged_attribute_values)
+        ],
         favorable_label=favorable_label,
         unfavorable_label=unfavorable_label,
     )
@@ -124,7 +125,8 @@ def compute_fairness_measures(aif_metric):
             aif_metric.true_positive_rate(),
             aif_metric.true_positive_rate(False),
             aif_metric.true_positive_rate(True),
-            aif_metric.true_positive_rate(False) / aif_metric.true_positive_rate(True),
+            aif_metric.true_positive_rate(False)
+            / aif_metric.true_positive_rate(True),
         ]
     )
 
@@ -156,7 +158,14 @@ def compute_fairness_measures(aif_metric):
 
     df = pd.DataFrame(
         fmeasures,
-        columns=["Metric", "Criterion", "All", "Unprivileged", "Privileged", "Ratio"],
+        columns=[
+            "Metric",
+            "Criterion",
+            "All",
+            "Unprivileged",
+            "Privileged",
+            "Ratio",
+        ],
     )
     df.index.name = "order"
     df.reset_index(inplace=True)
@@ -165,7 +174,17 @@ def compute_fairness_measures(aif_metric):
 
 def get_perf_measure_by_group(aif_metric, metric_name):
     """Get performance measures by group."""
-    perf_measures = ["TPR", "TNR", "FPR", "FNR", "PPV", "NPV", "FDR", "FOR", "ACC"]
+    perf_measures = [
+        "TPR",
+        "TNR",
+        "FPR",
+        "FNR",
+        "PPV",
+        "NPV",
+        "FDR",
+        "FOR",
+        "ACC",
+    ]
 
     func_dict = {
         "selection_rate": lambda x: aif_metric.selection_rate(privileged=x),
@@ -194,45 +213,3 @@ def get_perf_measure_by_group(aif_metric, metric_name):
         }
     )
     return df
-
-
-###############################################################################
-# # Fairness plots
-# def fairness_summary(aif_metric, threshold=0.2):
-#     """Fairness charts wrapper function."""
-#     lower = 1 - threshold
-#     upper = 1 / lower
-#     print(
-#         "Model is considered fair for the metric when "
-#         f"**ratio is between {lower:.2f} and {upper:.2f}**."
-#     )
-
-#     fmeasures = compute_fairness_measures(aif_metric)
-#     fmeasures["Fair?"] = fmeasures["Ratio"].apply(
-#         lambda x: "Yes" if lower < x < upper else "No")
-
-#     display(fmeasures.iloc[:3].style.applymap(color_red, subset=["Fair?"]))
-
-#     fig_cm = plot_confusion_matrix_by_group(aif_metric)
-#     return fmeasures, fig_cm
-
-
-# def plot_confusion_matrix_by_group(aif_metric, figsize=(14, 4)):
-#     """Plot confusion matrix by group."""
-#     def _cast_cm(x):
-#         return np.array([
-#             [x["TN"], x["FP"]],
-#             [x["FN"], x["TP"]]
-#         ])
-
-#     cmap = plt.get_cmap("Blues")
-#     fig, axs = plt.subplots(1, 3, figsize=figsize)
-#     for i, (privileged, title) in enumerate(zip(
-#             [None, True, False], ["all", "privileged", "unprivileged"])):
-#         cm = _cast_cm(aif_metric.binary_confusion_matrix(
-#             privileged=privileged))
-#         sns.heatmap(cm, cmap=cmap, annot=True, fmt="g", ax=axs[i])
-#         axs[i].set_xlabel("predicted")
-#         axs[i].set_ylabel("actual")
-#         axs[i].set_title(title)
-#     return fig

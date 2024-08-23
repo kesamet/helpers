@@ -1,6 +1,7 @@
 """
 Metric helpers. Adapted from scikit-plot
 """
+
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
 
@@ -78,7 +79,9 @@ def cumulative_lift_curve(y_true, y_score, pos_label=None):
         ValueError: If `y_true` is not composed of 2 classes. The Cumulative
             Gain Chart is only relevant in binary classification.
     """
-    percentages, gains = cumulative_gain_curve(y_true, y_score, pos_label=pos_label)
+    percentages, gains = cumulative_gain_curve(
+        y_true, y_score, pos_label=pos_label
+    )
     percentages = percentages[1:]
     gains = gains[1:] / percentages
     return percentages, gains
