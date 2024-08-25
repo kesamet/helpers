@@ -20,5 +20,5 @@ xgboost
 s3fs
 google-cloud-storage
 --find-links https://download.pytorch.org/whl/torch_stable.html
-torch==1.8.1+cpu
-torchvision==0.9.1+cpu
+torch==2.4.0+cpu
+torchvision==0.19.0+cpu

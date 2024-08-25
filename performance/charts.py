@@ -1,12 +1,9 @@
-"""
-Helpers for metrics
-"""
 import altair as alt
 import pandas as pd
 import streamlit as st
 from sklearn import metrics
 
-from .toolkit_perf import (
+from .metrics import (
     cumulative_gain_curve,
     cumulative_lift_curve,
     binary_ks_curve,
@@ -108,13 +105,17 @@ def cumulative_gain_chart(percentages, gains, title="Cumulative gain curve"):
 def cumulative_lift_chart(percentages, gains, title="Cumulative lift curve"):
     """Cumulative lift curve."""
     source = pd.DataFrame({"x": percentages, "y": gains})
-    return line_chart(source, "Percentage of samples selected", "Lift", title=title)
+    return line_chart(
+        source, "Percentage of samples selected", "Lift", title=title
+    )
 
 
 def recall_k_chart(percentages, recall, title="Recall@K"):
     """Recall@k curve."""
     source = pd.DataFrame({"x": percentages, "y": recall})
-    return line_chart(source, "Percentage of samples selected", "Recall", title=title)
+    return line_chart(
+        source, "Percentage of samples selected", "Recall", title=title
+    )
 
 
 def precision_k_chart(percentages, precision, title="Precision@K"):
@@ -203,10 +204,16 @@ def classification_summary(actual, proba, predicted):
     #     use_container_width=False,
     # )
 
-    thresholds, pct0, pct1, ks_stat, max_dist_at, _ = binary_ks_curve(actual, proba)
+    thresholds, pct0, pct1, ks_stat, max_dist_at, _ = binary_ks_curve(
+        actual, proba
+    )
     st.altair_chart(
         ks_statistic_chart(
-            thresholds, pct0, pct1, max_dist_at, title=f"KS statistic = {ks_stat:.4f}"
+            thresholds,
+            pct0,
+            pct1,
+            max_dist_at,
+            title=f"KS statistic = {ks_stat:.4f}",
         ),
         use_container_width=False,
     )

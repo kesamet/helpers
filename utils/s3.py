@@ -1,6 +1,7 @@
 """
 S3 utility functions
 """
+
 from io import BytesIO
 from pathlib import Path
 from typing import List, Union
@@ -26,7 +27,9 @@ def s3_download_file(
     s3 = boto3.resource("s3")
 
     try:
-        s3.Bucket(bucket_name).download_file(str(origin_blob_path), str(dest_filename))
+        s3.Bucket(bucket_name).download_file(
+            str(origin_blob_path), str(dest_filename)
+        )
     except botocore.exceptions.ClientError as e:
         if e.response["Error"]["Code"] == "404":
             print("The object does not exist.")
@@ -43,7 +46,9 @@ def s3_upload_file(
     s3 = boto3.resource("s3")
 
     try:
-        s3.Object(bucket_name, str(dest_key)).upload_file(str(origin_file_path))
+        s3.Object(bucket_name, str(dest_key)).upload_file(
+            str(origin_file_path)
+        )
     except botocore.exceptions.ClientError:
         raise
 
