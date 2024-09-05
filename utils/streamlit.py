@@ -28,10 +28,10 @@ def add_header(path: str) -> None:
 
 def get_pdf_display(pdfbytes: bytes) -> str:
     base64_pdf = base64.b64encode(pdfbytes).decode("utf-8")
-    return f"""
-        <iframe src="data:application/pdf;base64,{base64_pdf}"
-        width="100%" height="970" type="application/pdf"></iframe>
-        """
+    return (
+        f'<iframe src="data:application/pdf;base64,{base64_pdf}" '
+        'width="100%" height="970" type="application/pdf"></iframe>'
+    )
 
 
 def download_button(
@@ -79,22 +79,16 @@ def download_button(
 
     custom_css, button_id = _custom_button_style()
     return (
-        custom_css
-        + f"""
-        <a download="{filename}" id="{button_id}"
-        href="data:file/txt;base64,{b64}">{button_text}</a><br></br>
-        """
+        custom_css + f'<a download="{filename}" id="{button_id}" '
+        f'href="data:file/txt;base64,{b64}">{button_text}</a><br></br>'
     )
 
 
 def logout_button(auth_domain: str) -> str:
     custom_css, button_id = _custom_button_style()
     return (
-        custom_css
-        + f"""
-        <a id="{button_id}" href="https://{auth_domain}/_oauth/logout"
-        target="_self">Logout</a><br></br>
-        """
+        custom_css + f'<a id="{button_id}" href="https://{auth_domain}/_oauth/logout" '
+        'target="_self">Logout</a><br></br>'
     )
 
 
@@ -132,13 +126,13 @@ def _custom_button_style():
 
 def adjust_container_width(width: int = 1000) -> None:
     st.markdown(
-        f"""
-        <style>
-        .reportview-container .main .block-container{{
-            max-width: {width}px;
-        }}
-        </style>
-        """,
+        (
+            "<style>\n"
+            ".reportview-container .main .block-container{{\n"
+            f"    max-width: {width}px;\n"
+            "}}\n"
+            "</style>"
+        ),
         unsafe_allow_html=True,
     )
 
