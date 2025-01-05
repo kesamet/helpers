@@ -87,8 +87,7 @@ def download_button(
 def logout_button(auth_domain: str) -> str:
     custom_css, button_id = _custom_button_style()
     return (
-        custom_css
-        + f'<a id="{button_id}" href="https://{auth_domain}/_oauth/logout" '
+        custom_css + f'<a id="{button_id}" href="https://{auth_domain}/_oauth/logout" '
         'target="_self">Logout</a><br></br>'
     )
 

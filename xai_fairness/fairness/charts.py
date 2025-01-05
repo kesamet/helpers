@@ -57,9 +57,7 @@ def fmeasures_chart(df, lower, upper):
         alt.Y("Metric:O", sort=alt.SortField("order")),
         alt.Color(
             "Fair?:N",
-            scale=alt.Scale(
-                domain=["Yes", "No"], range=["#1E88E5", "#FF0D57"]
-            ),
+            scale=alt.Scale(domain=["Yes", "No"], range=["#1E88E5", "#FF0D57"]),
         ),
         alt.Tooltip(["Metric", "Ratio"]),
     )
@@ -123,18 +121,12 @@ def alg_fai(aif_metric, threshold, fairness_metrics=None, additional=0):
     fmeasures = compute_fairness_measures(aif_metric)
     if fairness_metrics is not None:
         fmeasures = fmeasures.query(f"Metric == {fairness_metrics}").copy()
-    fmeasures["Fair?"] = fmeasures["Ratio"].apply(
-        lambda x: "Yes" if lower < x < upper else "No"
-    )
+    fmeasures["Fair?"] = fmeasures["Ratio"].apply(lambda x: "Yes" if lower < x < upper else "No")
 
-    st.altair_chart(
-        fmeasures_chart(fmeasures, lower, upper), use_container_width=True
-    )
+    st.altair_chart(fmeasures_chart(fmeasures, lower, upper), use_container_width=True)
     if additional == 1:
         st.table(
-            fmeasures[
-                ["Metric", "Unprivileged", "Privileged", "Ratio", "Fair?"]
-            ]
+            fmeasures[["Metric", "Unprivileged", "Privileged", "Ratio", "Fair?"]]
             .set_index("Metric")
             .style.applymap(color_red, subset=["Fair?"])
             .format(
@@ -187,32 +179,24 @@ def alg_fai(aif_metric, threshold, fairness_metrics=None, additional=0):
                 )
             )
             all_perfs.append(c)
-        st.altair_chart(
-            alt.concat(*all_perfs, columns=1), use_container_width=False
-        )
+        st.altair_chart(alt.concat(*all_perfs, columns=1), use_container_width=False)
 
 
 def fairness_notes():
     st.write("**Equal opportunity**:")
-    st.latex(
-        r"\frac{\text{FNR}(D=\text{unprivileged})}{\text{FNR}(D=\text{privileged})}"
-    )
+    st.latex(r"\frac{\text{FNR}(D=\text{unprivileged})}{\text{FNR}(D=\text{privileged})}")
     st.write("**Statistical parity**:")
     st.latex(
         r"\frac{\text{Selection Rate}(D=\text{unprivileged})}{\text{Selection Rate}(D=\text{privileged})}"
     )
     st.write("**Predictive equality**:")
-    st.latex(
-        r"\frac{\text{FPR}(D=\text{unprivileged})}{\text{FPR}(D=\text{privileged})}"
-    )
+    st.latex(r"\frac{\text{FPR}(D=\text{unprivileged})}{\text{FPR}(D=\text{privileged})}")
     st.write("**Equalized odds**:")
     st.latex(
         r"\frac{\text{TPR}(D=\text{unprivileged})}{\text{TPR}(D=\text{privileged})} \text{ and } \frac{\text{FPR}(D=\text{unprivileged})}{\text{FPR}(D=\text{privileged})}"
     )
     st.write("**Predictive parity**:")
-    st.latex(
-        r"\frac{\text{PPV}(D=\text{unprivileged})}{\text{PPV}(D=\text{privileged})}"
-    )
+    st.latex(r"\frac{\text{PPV}(D=\text{unprivileged})}{\text{PPV}(D=\text{privileged})}")
     st.write("**Conditional use accuracy equality**:")
     st.latex(
         r"\frac{\text{PPV}(D=\text{unprivileged})}{\text{PPV}(D=\text{privileged})} \text{ and } \frac{\text{NPV}(D=\text{unprivileged})}{\text{NPV}(D=\text{privileged})}"

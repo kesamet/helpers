@@ -29,18 +29,14 @@ def get_explainer(
     :return explainer
     """
     if model_type == "tree":
-        explainer = shap.TreeExplainer(
-            model, feature_perturbation="interventional"
-        )
+        explainer = shap.TreeExplainer(model, feature_perturbation="interventional")
     else:
         if bkgrd_data is None:
             raise ValueError("Non tree model requires background data")
         if model_type == "linear":
             explainer = shap.LinearExplainer(model, bkgrd_data)
         else:
-            explainer = _get_kernel_explainer(
-                predict_func, bkgrd_data, kmeans_size
-            )
+            explainer = _get_kernel_explainer(predict_func, bkgrd_data, kmeans_size)
     return explainer
 
 
@@ -90,9 +86,7 @@ def compute_corrcoef(features, shap_values):
     for cls_shap_val in shap_values:
         corrs = list()
         for i in range(features.shape[1]):
-            df_ = pd.DataFrame(
-                {"x": features.iloc[:, i].values, "y": cls_shap_val[:, i]}
-            )
+            df_ = pd.DataFrame({"x": features.iloc[:, i].values, "y": cls_shap_val[:, i]})
             corrs.append(df_.corr(method="pearson").values[0, 1])
         all_corrs.append(np.array(corrs))
     return all_corrs
