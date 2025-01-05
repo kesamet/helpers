@@ -141,9 +141,7 @@ def dependence_chart(source, feat_col, val_col="value"):
             x=alt.X(
                 "jitter:Q",
                 title=None,
-                axis=alt.Axis(
-                    values=[0], ticks=True, grid=False, labels=False
-                ),
+                axis=alt.Axis(values=[0], ticks=True, grid=False, labels=False),
                 scale=alt.Scale(),
             ),
             y=alt.Y(f"{val_col}:Q", title="SHAP value"),
@@ -192,11 +190,7 @@ def make_source_waterfall(instance, base_value, shap_values, max_display=10):
             "val_": [base_value],
         }
     )
-    df1 = (
-        _df.query("shap_value > 0")
-        .sort_values("shap_value", ascending=False)
-        .copy()
-    )
+    df1 = _df.query("shap_value > 0").sort_values("shap_value", ascending=False).copy()
     df2 = pd.DataFrame(
         {
             "feature": ["Others"],

@@ -22,9 +22,7 @@ def gcs_list_blobs(
         the environment.
     """
     client = storage.Client(project_name)
-    return [
-        blob.name for blob in client.list_blobs(bucket_name, prefix=prefix)
-    ]
+    return [blob.name for blob in client.list_blobs(bucket_name, prefix=prefix)]
 
 
 def gcs_get_blob(

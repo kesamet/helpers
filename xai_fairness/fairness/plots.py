@@ -16,9 +16,7 @@ def fairness_summary(aif_metric, threshold=0.2):
     )
 
     fmeasures = compute_fairness_measures(aif_metric)
-    fmeasures["Fair?"] = fmeasures["Ratio"].apply(
-        lambda x: "Yes" if lower < x < upper else "No"
-    )
+    fmeasures["Fair?"] = fmeasures["Ratio"].apply(lambda x: "Yes" if lower < x < upper else "No")
 
     # display(fmeasures.iloc[:3].style.applymap(color_red, subset=["Fair?"]))
 
@@ -37,9 +35,7 @@ def plot_confusion_matrix_by_group(aif_metric, figsize=(14, 4)):
     for i, (privileged, title) in enumerate(
         zip([None, True, False], ["all", "privileged", "unprivileged"])
     ):
-        cm = _cast_cm(
-            aif_metric.binary_confusion_matrix(privileged=privileged)
-        )
+        cm = _cast_cm(aif_metric.binary_confusion_matrix(privileged=privileged))
         sns.heatmap(cm, cmap=cmap, annot=True, fmt="g", ax=axs[i])
         axs[i].set_xlabel("predicted")
         axs[i].set_ylabel("actual")

@@ -22,12 +22,8 @@ def prepare_dataset(
         label_names=["outcome"],
         scores_names=list(),
         protected_attribute_names=[protected_attribute],
-        privileged_protected_attributes=[
-            np.array(privileged_attribute_values)
-        ],
-        unprivileged_protected_attributes=[
-            np.array(unprivileged_attribute_values)
-        ],
+        privileged_protected_attributes=[np.array(privileged_attribute_values)],
+        unprivileged_protected_attributes=[np.array(unprivileged_attribute_values)],
         favorable_label=favorable_label,
         unfavorable_label=unfavorable_label,
     )
@@ -67,12 +63,8 @@ def get_aif_metric(
     aif_metric = ClassificationMetric(
         grdtruth,
         predicted,
-        unprivileged_groups=[
-            {protected_attribute: v} for v in unprivileged_attribute_values
-        ],
-        privileged_groups=[
-            {protected_attribute: v} for v in privileged_attribute_values
-        ],
+        unprivileged_groups=[{protected_attribute: v} for v in unprivileged_attribute_values],
+        privileged_groups=[{protected_attribute: v} for v in privileged_attribute_values],
     )
     return aif_metric
 
@@ -125,8 +117,7 @@ def compute_fairness_measures(aif_metric):
             aif_metric.true_positive_rate(),
             aif_metric.true_positive_rate(False),
             aif_metric.true_positive_rate(True),
-            aif_metric.true_positive_rate(False)
-            / aif_metric.true_positive_rate(True),
+            aif_metric.true_positive_rate(False) / aif_metric.true_positive_rate(True),
         ]
     )
 

@@ -28,9 +28,7 @@ def plot_imgrid(ims, nrows_cols, titles=None, figsize=(12, 12)):
     return fig
 
 
-def plot_history(
-    train_history, test_history, ax=None, title=None, ylabel=None
-):
+def plot_history(train_history, test_history, ax=None, title=None, ylabel=None):
     """Plot Keras model history."""
     if ax is None:
         fig, ax = plt.subplots()

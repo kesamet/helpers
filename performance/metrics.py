@@ -79,9 +79,7 @@ def cumulative_lift_curve(y_true, y_score, pos_label=None):
         ValueError: If `y_true` is not composed of 2 classes. The Cumulative
             Gain Chart is only relevant in binary classification.
     """
-    percentages, gains = cumulative_gain_curve(
-        y_true, y_score, pos_label=pos_label
-    )
+    percentages, gains = cumulative_gain_curve(y_true, y_score, pos_label=pos_label)
     percentages = percentages[1:]
     gains = gains[1:] / percentages
     return percentages, gains
@@ -116,8 +114,9 @@ def binary_ks_curve(y_true, y_probas):
     encoded_labels = lb.fit_transform(y_true)
     if len(lb.classes_) != 2:
         raise ValueError(
-            "Cannot calculate KS statistic for data with "
-            "{} category/ies".format(len(lb.classes_))
+            "Cannot calculate KS statistic for data with " "{} category/ies".format(
+                len(lb.classes_)
+            )
         )
     idx = encoded_labels == 0
     data1 = np.sort(y_probas[idx])

@@ -18,9 +18,7 @@ def plot_roc_curve(actual, pred, ax=None):
     ax.set_ylim([0.0, 1.05])
     ax.set_xlabel("False Positive Rate")
     ax.set_ylabel("True Positive Rate")
-    ax.set_title(
-        "ROC AUC = {:.4f}".format(metrics.roc_auc_score(actual, pred))
-    )
+    ax.set_title("ROC AUC = {:.4f}".format(metrics.roc_auc_score(actual, pred)))
 
     if ax is None:
         return fig
@@ -40,11 +38,7 @@ def plot_pr_curve(actual, pred, ax=None):
     ax.set_ylim([0.0, 1.05])
     ax.set_xlabel("Recall")
     ax.set_ylabel("Precision")
-    ax.set_title(
-        "Avg precision = {:.4f}".format(
-            metrics.average_precision_score(actual, pred)
-        )
-    )
+    ax.set_title("Avg precision = {:.4f}".format(metrics.average_precision_score(actual, pred)))
 
     if ax is None:
         return fig
