@@ -1,6 +1,7 @@
 """
 Evaluate.
 """
+
 import os
 import yaml
 from pathlib import Path
@@ -42,19 +43,28 @@ def evaluate(data_dir, camera_ids=[0, 1, 2, 3, 4]):
     print(data)
     with open(params["data"], "w") as f:
         yaml.dump(data, f)
-    
+
     # Create test dataloader
     with open(opt.data) as f:
-        data = yaml.load(f, Loader=yaml.FullLoader) 
+        data = yaml.load(f, Loader=yaml.FullLoader)
     test_path = data["val"]
 
     with open(opt.hyp) as f:
         hyp = yaml.load(f, Loader=yaml.FullLoader)
 
     testloader = create_dataloader(
-        test_path, CFG.imgsz, opt.batch_size, int(max(MODEL.stride)), opt,
-        hyp=hyp, cache=True, rect=True,
-        rank=-1, world_size=1, workers=0)[0]
+        test_path,
+        CFG.imgsz,
+        opt.batch_size,
+        int(max(MODEL.stride)),
+        opt,
+        hyp=hyp,
+        cache=True,
+        rect=True,
+        rank=-1,
+        world_size=1,
+        workers=0,
+    )[0]
 
     # Evaluate
     results, _, _ = test(
@@ -72,7 +82,7 @@ def evaluate(data_dir, camera_ids=[0, 1, 2, 3, 4]):
 
 
 def main():
-    modelpath = "weights/neha-yolov5-v14/best.pt"
+    modelpath = "weights/best.pt"
     data_dir = "weights/dataset"
     camera_ids = [0, 1, 2, 3, 4]
 

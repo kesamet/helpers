@@ -1,6 +1,7 @@
 """
 Extract images from video.
 """
+
 import os
 from datetime import timedelta
 
@@ -11,7 +12,7 @@ import pytz
 from config import CFG
 from utils.serve.kinesis import camera_uuid, devices
 
-uuid_names = [uuid.split('-')[0] for uuid in camera_uuid]
+uuid_names = [uuid.split("-")[0] for uuid in camera_uuid]
 
 
 def extract_images(vinput, dest, timestamp, camera_id):
@@ -54,7 +55,7 @@ def main():
     # Create folders
     if not os.path.isdir(data_dir):
         os.mkdir(data_dir)
-    
+
     dests = list()
     for camera_id in camera_ids:
         cam_folder = f"{data_dir}/{uuid_names[camera_id]}/"

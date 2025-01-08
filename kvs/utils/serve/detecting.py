@@ -1,6 +1,7 @@
 """
 Detection and tracking initialization
 """
+
 from os import getenv
 import numpy as np
 import torch
@@ -9,18 +10,18 @@ from config import CFG
 from utils.general import non_max_suppression
 
 MODELPATH = getenv("modelpath") or CFG.weights
-DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-print('Using device:', DEVICE)
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print("Using device:", DEVICE)
 print("Model path:", MODELPATH)
 if DEVICE.type == "cpu":
-    MODEL = torch.load(MODELPATH, map_location=DEVICE)['model'].float().fuse().eval()
+    MODEL = torch.load(MODELPATH, map_location=DEVICE)["model"].float().fuse().eval()
     print("torch.backends.cudnn.benchmark =", torch.backends.cudnn.benchmark)
 else:
-    MODEL = torch.load(MODELPATH, map_location=DEVICE)['model'].float().fuse().half().eval()
+    MODEL = torch.load(MODELPATH, map_location=DEVICE)["model"].float().fuse().half().eval()
     torch.backends.cudnn.benchmark = True
 
 IMGSZ = CFG.imgsz
-NAMES = MODEL.module.names if hasattr(MODEL, 'module') else MODEL.names
+NAMES = MODEL.module.names if hasattr(MODEL, "module") else MODEL.names
 COLORS = [(0, 255, 255), (255, 0, 255)]
 
 

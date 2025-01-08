@@ -1,11 +1,11 @@
 """
 Tracking utility functions.
 """
+
 from collections import OrderedDict
 
 import dlib
 import numpy as np
-import pandas as pd
 from scipy.optimize import linear_sum_assignment
 from scipy.spatial import distance as dist
 
@@ -20,6 +20,7 @@ def get_centroid(bbox):
 
 class CentroidTracker:
     """Centroid tracker object."""
+
     def __init__(self, max_disappeared=50, max_distance=50):
         # initialize the next unique object ID along with two ordered
         # dictionaries used to keep track of mapping a given object
@@ -93,7 +94,7 @@ class CentroidTracker:
 
             # used_rows = set()
             # used_cols = set()
-            for (row, col) in zip(rows, cols):
+            for row, col in zip(rows, cols):
                 # if row in used_rows or col in used_cols:
                 #     continue
 
@@ -105,8 +106,7 @@ class CentroidTracker:
                 # otherwise, grab the object_id for the current row,
                 # set its new centroid, and reset the disappeared counter
                 object_id = object_ids[row]
-                self.objects[object_id] = CentroidObj(
-                    input_centroids[col], input_rects[col])
+                self.objects[object_id] = CentroidObj(input_centroids[col], input_rects[col])
                 self.disappeared[object_id] = 0
 
                 # used_rows.add(row)
@@ -261,14 +261,17 @@ def area(bbox):
 def union_rect(rect1, rect2):
     bbox1 = rect1[:4]
     bbox2 = rect2[:4]
-    return [[
-        min(bbox1[0], bbox2[0]),
-        min(bbox1[1], bbox2[1]),
-        max(bbox1[2], bbox2[2]),
-        max(bbox1[3], bbox2[3]),
-        rect1[4],
-        (rect1[5] + rect2[5]) / 2,
-    ] + list(rect1)[6:]]
+    return [
+        [
+            min(bbox1[0], bbox2[0]),
+            min(bbox1[1], bbox2[1]),
+            max(bbox1[2], bbox2[2]),
+            max(bbox1[3], bbox2[3]),
+            rect1[4],
+            (rect1[5] + rect2[5]) / 2,
+        ]
+        + list(rect1)[6:]
+    ]
 
 
 def get_rects(dfs, round_msec):
@@ -276,8 +279,8 @@ def get_rects(dfs, round_msec):
     rects2 = dfs[1].query(f"round_msec == {round_msec}").values
     rects4 = dfs[2].query(f"round_msec == {round_msec}").values
 
-    bool1 = (rects1[:, 2] > 620)
-    bool2 = (rects2[:, 0] < 660)
+    bool1 = rects1[:, 2] > 620
+    bool2 = rects2[:, 0] < 660
 
     if bool1.sum() == 0 or bool2.sum() == 0:
         return np.vstack([rects1, rects2, rects4])

@@ -1,6 +1,7 @@
 """
 Detection utility functions.
 """
+
 import time
 from collections import deque
 from datetime import timedelta
@@ -186,7 +187,9 @@ class ThreadedVideoClip:
                     pos_msec_arr = np.array([pos_msec[i]] * len(r)).reshape(-1, 1)
                     round_msec_arr = np.array([round_msec[i]] * len(r)).reshape(-1, 1)
                     camera_id_arr = np.array([self.camera_id] * len(r)).reshape(-1, 1)
-                    self.all_rects.append(np.hstack((r, pos_msec_arr, round_msec_arr, camera_id_arr)))
+                    self.all_rects.append(
+                        np.hstack((r, pos_msec_arr, round_msec_arr, camera_id_arr))
+                    )
             # 2 min video at 30 fps has 3600 frames
             if self.n_processed_frames % n_frames + take_n >= n_frames:
                 print(f"Scoring {n_frames} frames took: {time.time() - start:.3f}s")
@@ -270,7 +273,9 @@ class ThreadedVideoStream:
                     pos_msec_arr = np.array([pos_msec[i]] * len(r)).reshape(-1, 1)
                     round_msec_arr = np.array([round_msec[i]] * len(r)).reshape(-1, 1)
                     camera_id_arr = np.array([self.camera_id] * len(r)).reshape(-1, 1)
-                    self.all_rects.append(np.hstack((r, pos_msec_arr, round_msec_arr, camera_id_arr)))
+                    self.all_rects.append(
+                        np.hstack((r, pos_msec_arr, round_msec_arr, camera_id_arr))
+                    )
             # 2 min video at 30 fps has 3600 frames
             if self.n_processed_frames % n_frames + take_n >= n_frames:
                 print(f"Scoring {n_frames} frames took: {time.time() - start:.3f}s")

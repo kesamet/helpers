@@ -1,6 +1,7 @@
 """
 Utility functions for plotting.
 """
+
 from datetime import datetime
 
 import cv2

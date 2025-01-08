@@ -1,6 +1,7 @@
 """
 Predict and write to txt.
 """
+
 import os
 
 import cv2
@@ -47,7 +48,7 @@ def predict_write(img_path, dest_path):
 
 
 def main():
-    modelpath = "weights/neha-yolov5-v14/best.pt"
+    modelpath = "weights/best.pt"
     data_dir = "weights/dataset"
     camera_ids = [0, 1, 2, 3, 4]
 
@@ -64,7 +65,9 @@ def main():
 
         for imgfn in os.listdir(f"{data_dir}/{uuid_names[camera_id]}/images/"):
             txtfn = imgfn.split(".")[0]
-            predict_write(f"{data_dir}/{uuid_names[camera_id]}/images/{imgfn}", f"{dest}{txtfn}.txt")
+            predict_write(
+                f"{data_dir}/{uuid_names[camera_id]}/images/{imgfn}", f"{dest}{txtfn}.txt"
+            )
 
 
 if __name__ == "__main__":

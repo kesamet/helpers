@@ -1,6 +1,7 @@
 """
 General utility functions.
 """
+
 from datetime import datetime
 from os import getenv
 
@@ -18,13 +19,13 @@ def parse_timestamp(ts_string):
 
 def set_sgtz(timestamp):
     """Convert timestamp to SGT. Naive datetime are assumed to be SGT."""
-    sgtz = pytz.timezone('Asia/Singapore')
+    sgtz = pytz.timezone("Asia/Singapore")
     return sgtz.localize(timestamp)
 
 
 def set_utcz(timestamp):
     """Convert timestamp to UTC. Naive datetime are assumed to be UTC."""
-    utcz = pytz.timezone('UTC')
+    utcz = pytz.timezone("UTC")
     return utcz.localize(timestamp)
 
 
@@ -48,7 +49,7 @@ def scale_coords(xys, gain, pad, inverse=True):
         xys[:, 0] = ((xys[:, 0] - pad[0]) / gain).astype(int)
         xys[:, 1] = ((xys[:, 1] - pad[1]) / gain).astype(int)
         return xys
-    
+
     xys[:, 0] = (xys[:, 0] * gain + pad[0]).astype(int)
     xys[:, 1] = (xys[:, 1] * gain + pad[1]).astype(int)
     return xys
@@ -63,7 +64,7 @@ def get_execution_time():
     # Naive server time assumed to be in UTC
     dt_now = datetime.now(pytz.timezone("Asia/Singapore"))
     # Round down to last hour
-    return dt_now.replace(minute=0, second=0, microsecond=0)    
+    return dt_now.replace(minute=0, second=0, microsecond=0)
 
 
 def generate_filename(timestamp):

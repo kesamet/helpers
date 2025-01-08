@@ -1,6 +1,7 @@
 """
 Adapted from https://github.com/basisai/video-stream/tree/master/stream
 """
+
 from datetime import datetime
 from os import getenv
 from typing import Optional

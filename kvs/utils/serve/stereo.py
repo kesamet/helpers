@@ -1,7 +1,7 @@
 import json
 from datetime import datetime
 from itertools import combinations
-from typing import Tuple, List, Dict 
+from typing import Tuple, Dict
 
 import cv2
 import numpy as np
@@ -9,7 +9,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import cm
 
-# from .store.s3 import AWSCredentials, S3PredictionStore
+from utils.store.s3 import AWSCredentials, S3PredictionStore
 
 columns = [
     "timestamp",
@@ -62,7 +62,7 @@ class Stereo:
         self.occupancy_map = np.ones(shape=(len(self.projections),) + self.grid_size)
         self.occupancy_map /= self.grid_size[0] * self.grid_size[1]
         self.target_height = np.zeros(shape=(len(self.projections), self.num_targets))
-        self.threshold = 0.5 # for filtering target positions on occupancy maps
+        self.threshold = 0.5  # for filtering target positions on occupancy maps
 
     def project_world(self, camera: int, objectPoints):
         if camera == 0:
@@ -98,7 +98,7 @@ class Stereo:
                 offset = index
             pixels.append(projected[offset])
         return pixels
-    
+
     def update_positions(self, detections: Dict[int, list]):
         h_detected = {}
         for c, _ in enumerate(self.occupancy_map):
@@ -107,18 +107,18 @@ class Stereo:
 
             # Sort detections to process them in the same order for both cameras
             df = pd.DataFrame(detections[c])
-            if df.shape[1] == 6: 
-                df.columns= ['x0', 'y0', 'x1', 'y1', 'label', 'confidence']
+            if df.shape[1] == 6:
+                df.columns = ["x0", "y0", "x1", "y1", "label", "confidence"]
             else:
-                df.columns= ['x0', 'y0', 'x1', 'y1']
+                df.columns = ["x0", "y0", "x1", "y1"]
             df = df.sort_values("y1", ascending=bool(c % 2))
 
             update = np.zeros(shape=self.grid_size)
             projected = self.projections[c]
             for i in range(df.shape[0]):
                 box = df.iloc[i]
-                c_x = (box['x0'] + box['x1']) / 2
-                c_y = box['y1']
+                c_x = (box["x0"] + box["x1"]) / 2
+                c_y = box["y1"]
                 # Use middle of bottom edge of bounding box as detected image point
                 detected = np.array([c_x, c_y])
                 # Compute euclidean distance with all projected points in image space
@@ -137,7 +137,7 @@ class Stereo:
                 update[to_update] += normalized
                 # Remember top edge of bounding box for height estimation
                 g_index = index[normalized.argmax()]
-                h_detected[(c, g_index)] = np.array([c_x, box['y0']])
+                h_detected[(c, g_index)] = np.array([c_x, box["y0"]])
             self.occupancy_map[c] = update
 
         num_detection_sets = sum([len(x) > 0 for x in detections.values()])
@@ -164,7 +164,6 @@ class Stereo:
             # # Take the average height detected in both cameras
             # print("Diff: ", np.diff(self.target_height, axis=0))
             # print("Height: ", np.mean(self.target_height, axis=0))
-            # TODO: find neha by height
 
     @classmethod
     def align(cls, camera_targets):
@@ -195,15 +194,15 @@ class Stereo:
             ref_idx = np.argmax([len(x) for x in camera_targets])
             camera_targets = [camera_targets[ref_idx]] * len(self.occupancy_map)
         return self.align(camera_targets)
-            
+
     def get_positions(self) -> Tuple[int, int]:
         pos = self.get_positions_sorted()
         # Average detections from all cameras for global occupancy map
         return np.mean(pos, axis=0, dtype=int)
-    
+
     def get_index(self, pos):
         return pos[1] + pos[0] * self.grid_size[1]
-    
+
     def filter_positions(self):
         return [np.argwhere(grid > self.threshold) for grid in self.occupancy_map]
 
@@ -214,18 +213,10 @@ class Stereo:
 def set_aspect_equal(ax, X, Y, Z):
     # Create cubic bounding box to simulate equal aspect ratio
     # https://stackoverflow.com/a/13701747
-    max_range = np.array(
-        [X.max() - X.min(), Y.max() - Y.min(), Z.max() - Z.min()]
-    ).max()
-    Xb = 0.5 * max_range * np.mgrid[-1:2:2, -1:2:2, -1:2:2][0].flatten() + 0.5 * (
-        X.max() + X.min()
-    )
-    Yb = 0.5 * max_range * np.mgrid[-1:2:2, -1:2:2, -1:2:2][1].flatten() + 0.5 * (
-        Y.max() + Y.min()
-    )
-    Zb = 0.5 * max_range * np.mgrid[-1:2:2, -1:2:2, -1:2:2][2].flatten() + 0.5 * (
-        Z.max() + Z.min()
-    )
+    max_range = np.array([X.max() - X.min(), Y.max() - Y.min(), Z.max() - Z.min()]).max()
+    Xb = 0.5 * max_range * np.mgrid[-1:2:2, -1:2:2, -1:2:2][0].flatten() + 0.5 * (X.max() + X.min())
+    Yb = 0.5 * max_range * np.mgrid[-1:2:2, -1:2:2, -1:2:2][1].flatten() + 0.5 * (Y.max() + Y.min())
+    Zb = 0.5 * max_range * np.mgrid[-1:2:2, -1:2:2, -1:2:2][2].flatten() + 0.5 * (Z.max() + Z.min())
 
     for xb, yb, zb in zip(Xb, Yb, Zb):
         ax.plot([xb], [yb], [zb], "w")
@@ -259,7 +250,7 @@ def plot_3d(rec):
 
 def main():
     store = S3PredictionStore(
-        bucket="bdrk-neha-wrs-logs-prediction",
+        bucket="my-bucket,
         credentials=AWSCredentials(
             region_name="ap-southeast-1",
         ),
@@ -279,12 +270,7 @@ def main():
     print(pos)
     print(
         "(X, Y, Z): ",
-        [
-            tuple(
-                rec.ground_plane[p[1] + p[0] * rec.grid_size[1]].astype(float)
-            )
-            for p in pos
-        ],
+        [tuple(rec.ground_plane[p[1] + p[0] * rec.grid_size[1]].astype(float)) for p in pos],
     )
     # likelihood = [rec.get_likelihood(i, p) for i, p in enumerate(pos)]
     # print(likelihood)

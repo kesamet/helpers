@@ -1,6 +1,7 @@
 """
 Script containing utility functions for the app.
 """
+
 import base64
 import json
 import pickle
@@ -26,7 +27,7 @@ def add_header(path):
 
 
 def get_pdf_display(pdfbytes):
-    base64_pdf = base64.b64encode(pdfbytes).decode('utf-8')
+    base64_pdf = base64.b64encode(pdfbytes).decode("utf-8")
     pdf_display = f'<embed src="data:application/pdf;base64,{base64_pdf}" width="700" height="1025" type="application/pdf">'
     return pdf_display
 
@@ -71,19 +72,25 @@ def download_button(object_to_download, download_filename, button_text, pickle_i
         b64 = base64.b64encode(object_to_download).decode()
 
     custom_css, button_id = custom_button_style()
-    dl_link = custom_css + f'<a download="{download_filename}" id="{button_id}" href="data:file/txt;base64,{b64}">{button_text}</a><br></br>'
+    dl_link = (
+        custom_css
+        + f'<a download="{download_filename}" id="{button_id}" href="data:file/txt;base64,{b64}">{button_text}</a><br></br>'
+    )
     return dl_link
 
 
 def logout_button(auth_domain):
     custom_css, button_id = custom_button_style()
-    lo_link = custom_css + f'<a id="{button_id}" href="https://{auth_domain}/_oauth/logout" target="_self">Logout</a><br></br>'
+    lo_link = (
+        custom_css
+        + f'<a id="{button_id}" href="https://{auth_domain}/_oauth/logout" target="_self">Logout</a><br></br>'
+    )
     return lo_link
 
 
 def custom_button_style():
-    button_uuid = str(uuid.uuid4()).replace('-', '')
-    button_id = re.sub('\d+', '', button_uuid)
+    button_uuid = str(uuid.uuid4()).replace("-", "")
+    button_id = re.sub("\d+", "", button_uuid)
 
     custom_css = f""" 
             <style>
@@ -127,6 +134,4 @@ def adjust_container_width(width=1000):
 
 
 def colour_text(notes, color="red"):
-    st.markdown(
-        f"<span style='color: {color}'>{notes}</span>",
-        unsafe_allow_html=True)
+    st.markdown(f"<span style='color: {color}'>{notes}</span>", unsafe_allow_html=True)

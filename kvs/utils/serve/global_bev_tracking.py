@@ -1,6 +1,7 @@
 """
 Tracking
 """
+
 import copy
 from collections import OrderedDict
 from datetime import datetime
@@ -250,7 +251,7 @@ def get_bev_position_info(df: pd.DataFrame, bbox_max_distance=5):
                 D = dist.cdist(p_update[indexes], p_tmp)
 
             rows, cols = linear_sum_assignment(D)
-            for (row, col) in zip(rows, cols):
+            for row, col in zip(rows, cols):
                 # do not associate if distance between detections > bbox_max_distance
                 if D[row, col] > bbox_max_distance:
                     p_update = np.vstack([p_update, p_tmp[col]])
@@ -278,11 +279,11 @@ def get_bev_position_info(df: pd.DataFrame, bbox_max_distance=5):
 
 
 def link_info_with_object(
-        df: pd.DataFrame,
-        pos_info: Dict[Tuple, List],
-        centroid_tracker: CentroidTracker,
-        timestamp: datetime,
-    ):
+    df: pd.DataFrame,
+    pos_info: Dict[Tuple, List],
+    centroid_tracker: CentroidTracker,
+    timestamp: datetime,
+):
     objs = {}
     for object_id, centroid in centroid_tracker.objects.items():
         if centroid_tracker.disappeared[object_id] == 0:
@@ -295,10 +296,10 @@ def link_info_with_object(
 
 
 def update_trackable_objects(
-        trackable_objects: Dict[int, TrackableObject],
-        centroid_tracker: CentroidTracker,
-        centroid_objs: Dict[int, CentroidObj],
-    ):
+    trackable_objects: Dict[int, TrackableObject],
+    centroid_tracker: CentroidTracker,
+    centroid_objs: Dict[int, CentroidObj],
+):
     """
     Update existing or register new trackable objects, update info
     including centroids, detections, world positions and height estimates.
@@ -308,8 +309,7 @@ def update_trackable_objects(
             continue
         to = trackable_objects.get(object_id)
         if to is None:
-            trackable_objects[object_id] = TrackableObject(
-                object_id, centroid_objs[object_id])
+            trackable_objects[object_id] = TrackableObject(object_id, centroid_objs[object_id])
         else:
             to.add(centroid_objs[object_id])
 
@@ -325,8 +325,7 @@ def generate_tracking_results(trackable_objects: Dict[int, TrackableObject]):
         df["object_id"] = obj
 
         info_df = pd.concat(
-            [pd.DataFrame(x) for x in trackable_objects[obj].info],
-            ignore_index=True
+            [pd.DataFrame(x) for x in trackable_objects[obj].info], ignore_index=True
         )
         # info_df.columns = ["timestamp", "cam", "height", "projx", "projy",
         #                    "x0", "y0", "x1", "y1", "label", "confidence"]
@@ -337,11 +336,11 @@ def generate_tracking_results(trackable_objects: Dict[int, TrackableObject]):
 
 
 def scale_coords(
-        df: pd.DataFrame,
-        cameras: Dict[int, Dict],
-        norm_coords=False,
-        rescale_coords=True,
-    ):
+    df: pd.DataFrame,
+    cameras: Dict[int, Dict],
+    norm_coords=False,
+    rescale_coords=True,
+):
     """Normalize / rescale coordinates."""
     for cid in df.cam.unique():
         camera = cameras[cid]

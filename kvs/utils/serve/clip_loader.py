@@ -33,10 +33,10 @@ class VideoReaderPipeline(Pipeline):
         return output
 
 
-class DALILoader():
+class DALILoader:
     def __init__(self, batch_size, file_root, sequence_length, crop_size):
         container_files = os.listdir(file_root)
-        container_files = [file_root + '/' + f for f in container_files]
+        container_files = [file_root + "/" + f for f in container_files]
         self.pipeline = VideoReaderPipeline(
             batch_size=batch_size,
             sequence_length=sequence_length,

@@ -1,6 +1,7 @@
 """
 S3 utility functions
 """
+
 import yaml
 from io import BytesIO
 from os import getenv

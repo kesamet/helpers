@@ -1,7 +1,3 @@
-"""
-Streamlit app.
-Timestamps used are in SGT while app server is in (naive) UTC
-"""
 from datetime import datetime, timedelta, timezone
 from os import getenv
 from pathlib import Path
@@ -20,8 +16,7 @@ JINJA_ENV = Environment(
     autoescape=select_autoescape(["html"]),
 )
 VIDEO_PLAYER = JINJA_ENV.get_template("native.html")
-DOMAIN = getenv("DOMAIN") or "video.pub.model.amoy.ai"
-DEBUG = False
+DOMAIN = getenv("DOMAIN")
 
 
 def camera_page(timenow):
@@ -41,9 +36,10 @@ def camera_page(timenow):
         "Camera 2",
     ]
     select_camera = st.selectbox(
-        "Select camera.", list(range(len(readable_text))), format_func=lambda i: readable_text[i])
+        "Select camera.", list(range(len(readable_text))), format_func=lambda i: readable_text[i]
+    )
 
-    real_time = set_utcz(datetime.utcnow() - timedelta(minutes=2))
+    real_time = set_utcz(datetime.now() - timedelta(minutes=2))
     if utc_time > real_time:
         now = real_time.replace(second=0, microsecond=0)
         st.info(f"Showing live footage from {now.time()} UTC")
@@ -66,7 +62,7 @@ def camera_page(timenow):
     start = utc_time.isoformat() if utc_time < real_time else ""
     if start:
         params["start"] = start
-    api = getenv("API") or f"https://{DOMAIN}/api"
+    api = getenv("API", f"https://{DOMAIN}/api")
     if st.button("Show video stream"):
         # Streamlit will double load the video if it's placed outside the button
         resp = requests.get(api, params=params)
@@ -78,12 +74,7 @@ def camera_page(timenow):
 
 
 def main():
-    if DEBUG:
-        st.sidebar.warning("DEBUG")
-        timenow = set_sgtz(datetime.now())
-    else:
-        # App server in UTC
-        timenow = set_utcz(datetime.now()).astimezone(pytz.timezone("Asia/Singapore"))
+    timenow = set_utcz(datetime.now()).astimezone(pytz.timezone("Asia/Singapore"))
 
     dict_pages = {
         "Camera Feed": camera_page,
@@ -91,8 +82,7 @@ def main():
 
     select_page = st.sidebar.radio("", list(dict_pages.keys()))
     st.title(select_page)
-    st.sidebar.info("Note: results are available hourly one hour after the hour.")
-    st.sidebar.write(timenow.strftime("%Y-%m-%d %H:%M SGT"))
+    st.sidebar.info(timenow.strftime("%Y-%m-%d %H:%M SGT"))
 
     dict_pages[select_page](timenow)
 
