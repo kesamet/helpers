@@ -1,0 +1,51 @@
+<html>
+    <head>
+        <title>CCTV</title>
+        <style>
+            body {
+                margin: 0;
+            }
+        </style>
+    </head>
+    <body >
+        <video width="100%" controls crossorigin playsinline muted></video>
+        <script src="https://github.com/video-dev/hls.js/releases/download/v0.14.16/hls.min.js"></script>
+        <script>
+            const src = "https://{{ domain }}{{ src }}";
+            const video = document.querySelector("video");
+            const loadDelayMs = 2000;
+
+            const refresh = () => {
+                if (video.readyState < 2) {
+                    console.log("Reloading manifest file");
+                    video.load();
+                    setTimeout(refresh, loadDelayMs);
+                }
+            };
+
+            if (!Hls.isSupported()) {
+                video.src = src;
+                setTimeout(refresh, loadDelayMs);
+            } else {
+                const hls = new Hls({
+                    debug: true,
+                    manifestLoadingRetryDelay: loadDelayMs,
+                    manifestLoadingMaxRetry: 5,
+                });
+                hls.loadSource(src);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                    this.play();
+                }.bind(video));
+                hls.on(Hls.Events.ERROR, function (event, data) {
+                    if (data.fatal && data.type === Hls.ErrorTypes.NETWORK_ERROR && data.details === Hls.ErrorDetails.MANIFEST_LOAD_ERROR) {
+                        console.log(`Reloading manifest file in ${loadDelayMs / 1000} seconds...`);
+                        setTimeout(() => {
+                            hls.loadSource(src)
+                        }, loadDelayMs);
+                    }
+                });
+            }
+        </script>
+    </body>
+</html>
