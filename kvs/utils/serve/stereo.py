@@ -250,7 +250,7 @@ def plot_3d(rec):
 
 def main():
     store = S3PredictionStore(
-        bucket="my-bucket,
+        bucket="my-bucket",
         credentials=AWSCredentials(
             region_name="ap-southeast-1",
         ),

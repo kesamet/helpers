@@ -15,12 +15,12 @@ from imutils.video import FPS
 
 from config import CFG
 from utils.serve.detecting import process_img, obj_detection
-from utils.serve.kinesis_camera import CameraStream, camera_uuid
+from utils.serve.kinesis import CameraStream, CAMERA_NAMES
 from utils.serve.general import get_execution_time
 
 
 def process_all_streams(period=50, duration=200):
-    streams = [ThreadedVideoStream(c, period, duration) for c in range(len(camera_uuid))]
+    streams = [ThreadedVideoStream(c, period, duration) for c in range(len(CAMERA_NAMES))]
     fps_estimator = FPS().start()
     n_frames = 3600
     n_processed = 0
@@ -64,7 +64,7 @@ def process_all_streams(period=50, duration=200):
     for s in streams:
         s.thread.join()
     info = {
-        "total cameras": len(camera_uuid),
+        "total cameras": len(CAMERA_NAMES),
         "total processed frames": sum(s.n_frames for s in streams),
         "total frames": sum(s.n_processed_frames for s in streams),
         "elapsed time": fps_estimator.elapsed(),
@@ -110,7 +110,7 @@ class ThreadedVideoClip:
         self.period = period
         self.duration = duration
         self.camera_id = src
-        self.camera_stream = CameraStream(camera_uuid[src])
+        self.camera_stream = CameraStream(CAMERA_NAMES[src])
         self.frames = deque()
         self.n_frames = 0
         self.n_processed_frames = 0
@@ -209,7 +209,7 @@ class ThreadedVideoStream:
         self.period = period
         self.duration = duration
         self.camera_id = src
-        self.camera_stream = CameraStream(camera_uuid[src])
+        self.camera_stream = CameraStream(CAMERA_NAMES[src])
         self.frames = deque()
         self.n_frames = 0
         self.n_processed_frames = 0
